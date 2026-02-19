@@ -78,10 +78,10 @@ export default function AboutPage() {
       <AnimatedSection>
         <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
           <Image
-            src="https://static.wixstatic.com/media/24c59a_d9868c8efb2341998f6da973b7e8ce32~mv2_d_2500_1667_s_2.jpeg"
-            alt="Clo Chaperon"
+            src="https://static.wixstatic.com/media/24c59a_0263d54006c64f688039760551c58f51~mv2_d_3000_2000_s_2.jpg"
+            alt="Clo Chaperon performing"
             fill
-            className="object-cover object-top"
+            className="object-cover object-center"
             unoptimized
           />
         </div>
