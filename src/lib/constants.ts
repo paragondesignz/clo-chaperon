@@ -60,9 +60,9 @@ export const PULL_QUOTES = [
 ];
 
 export const VIDEOS = [
-  { title: "Peel Me a Grape", duration: "0:57", id: "1" },
-  { title: "Bye Bye Blackbird", duration: "1:16", id: "2" },
-  { title: "La Vie En Rose", duration: "0:48", id: "3" },
+  { title: "Peel Me a Grape", duration: "0:57", id: "1", src: "/peel-me-a-grape.mp4" },
+  { title: "Bye Bye Blackbird", duration: "1:16", id: "2", src: "/bye-bye-blackbird.mp4" },
+  { title: "La Vie En Rose", duration: "0:48", id: "3", src: "/La Vie En Rose.mp4" },
   { title: "Dat Dere", duration: "0:55", id: "4" },
   { title: "Shimmy Like My Sister Kate", duration: "0:40", id: "5" },
 ];

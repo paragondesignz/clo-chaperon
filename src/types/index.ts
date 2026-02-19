@@ -13,6 +13,7 @@ export interface Video {
   title: string;
   duration: string;
   id: string;
+  src?: string;
 }
 
 export interface GalleryImage {
