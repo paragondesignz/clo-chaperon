@@ -60,9 +60,17 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect upload API
+  if (pathname.startsWith("/api/upload") && request.method === "POST") {
+    const authed = await isAuthenticated(request);
+    if (!authed) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/content/:path*"],
+  matcher: ["/admin/:path*", "/api/content/:path*", "/api/upload/:path*"],
 };

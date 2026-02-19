@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import FormField from "@/components/admin/FormField";
-import ImagePreview from "@/components/admin/ImagePreview";
+import ImageUploader from "@/components/admin/ImageUploader";
 import SaveButton from "@/components/admin/SaveButton";
 import SortableList from "@/components/admin/SortableList";
 import type { HomeSection } from "@/types/content";
@@ -11,7 +11,9 @@ export default function AdminHomePage() {
   const [data, setData] = useState<HomeSection | null>(null);
 
   useEffect(() => {
-    fetch("/api/content/home").then((r) => r.json()).then(setData);
+    fetch("/api/content/home")
+      .then((r) => r.json())
+      .then(setData);
   }, []);
 
   const save = async () => {
@@ -22,34 +24,69 @@ export default function AdminHomePage() {
     });
   };
 
-  if (!data) return <p className="text-sm text-[#888]">Loading...</p>;
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="w-5 h-5 border-2 border-[#ddd] border-t-[#222] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-xl space-y-6">
       <h2 className="text-lg font-semibold text-[#222]">Home Page</h2>
 
+      <ImageUploader
+        label="Hero Image"
+        value={data.heroImage}
+        onChange={(url) => setData({ ...data, heroImage: url })}
+        maxWidth={2400}
+        maxHeight={1600}
+      />
+
+      <FormField
+        label="Intro Text"
+        value={data.introText}
+        onChange={(v) => setData({ ...data, introText: v })}
+        multiline
+        rows={3}
+      />
+
+      <ImageUploader
+        label="Quote Image"
+        value={data.quoteImage}
+        onChange={(url) => setData({ ...data, quoteImage: url })}
+        maxWidth={1600}
+        maxHeight={1200}
+      />
+
+      <FormField
+        label="Quote Text"
+        value={data.quoteText}
+        onChange={(v) => setData({ ...data, quoteText: v })}
+        multiline
+        rows={3}
+      />
+
+      <FormField
+        label="Story Title"
+        value={data.storyTitle}
+        onChange={(v) => setData({ ...data, storyTitle: v })}
+      />
+
       <div>
-        <FormField label="Hero Image URL" value={data.heroImage} onChange={(v) => setData({ ...data, heroImage: v })} type="url" />
-        <ImagePreview src={data.heroImage} />
-      </div>
-
-      <FormField label="Intro Text" value={data.introText} onChange={(v) => setData({ ...data, introText: v })} multiline rows={3} />
-
-      <div>
-        <FormField label="Quote Image URL" value={data.quoteImage} onChange={(v) => setData({ ...data, quoteImage: v })} type="url" />
-        <ImagePreview src={data.quoteImage} />
-      </div>
-
-      <FormField label="Quote Text" value={data.quoteText} onChange={(v) => setData({ ...data, quoteText: v })} multiline rows={3} />
-
-      <FormField label="Story Title" value={data.storyTitle} onChange={(v) => setData({ ...data, storyTitle: v })} />
-
-      <div>
-        <label className="block text-xs font-medium text-[#888] uppercase tracking-wide mb-2">Story Paragraphs</label>
+        <label className="block text-xs font-medium text-[#888] uppercase tracking-wide mb-2">
+          Story Paragraphs
+        </label>
         <SortableList
           items={data.storyParagraphs}
           onChange={(items) => setData({ ...data, storyParagraphs: items })}
-          onAdd={() => setData({ ...data, storyParagraphs: [...data.storyParagraphs, ""] })}
+          onAdd={() =>
+            setData({
+              ...data,
+              storyParagraphs: [...data.storyParagraphs, ""],
+            })
+          }
           addLabel="Add paragraph"
           renderItem={(item, i) => (
             <textarea
@@ -60,33 +97,35 @@ export default function AdminHomePage() {
                 setData({ ...data, storyParagraphs: next });
               }}
               rows={3}
-              className="w-full border border-[#ddd] rounded px-3 py-2 text-sm text-[#222] focus:outline-none focus:border-[#222] resize-y"
+              className="w-full border border-[#ddd] rounded px-3 py-2 text-sm text-[#222] focus:outline-none focus:border-[#222] resize-y transition-colors"
             />
           )}
         />
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-[#888] uppercase tracking-wide mb-2">Image Strip URLs</label>
+        <label className="block text-xs font-medium text-[#888] uppercase tracking-wide mb-2">
+          Image Strip
+        </label>
         <SortableList
           items={data.imageStrip}
           onChange={(items) => setData({ ...data, imageStrip: items })}
-          onAdd={() => setData({ ...data, imageStrip: [...data.imageStrip, ""] })}
+          onAdd={() =>
+            setData({ ...data, imageStrip: [...data.imageStrip, ""] })
+          }
           addLabel="Add image"
           renderItem={(item, i) => (
-            <div>
-              <input
-                value={item}
-                onChange={(e) => {
-                  const next = [...data.imageStrip];
-                  next[i] = e.target.value;
-                  setData({ ...data, imageStrip: next });
-                }}
-                className="w-full border border-[#ddd] rounded px-3 py-2 text-sm text-[#222] focus:outline-none focus:border-[#222]"
-                placeholder="Image URL"
-              />
-              <ImagePreview src={item} />
-            </div>
+            <ImageUploader
+              value={item}
+              onChange={(url) => {
+                const next = [...data.imageStrip];
+                next[i] = url;
+                setData({ ...data, imageStrip: next });
+              }}
+              maxWidth={1200}
+              maxHeight={800}
+              compact
+            />
           )}
         />
       </div>

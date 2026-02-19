@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import FormField from "@/components/admin/FormField";
-import ImagePreview from "@/components/admin/ImagePreview";
+import ImageUploader from "@/components/admin/ImageUploader";
 import SaveButton from "@/components/admin/SaveButton";
 import type { ContactSection } from "@/types/content";
 
@@ -10,7 +10,9 @@ export default function AdminContactPage() {
   const [data, setData] = useState<ContactSection | null>(null);
 
   useEffect(() => {
-    fetch("/api/content/contact").then((r) => r.json()).then(setData);
+    fetch("/api/content/contact")
+      .then((r) => r.json())
+      .then(setData);
   }, []);
 
   const save = async () => {
@@ -21,20 +23,44 @@ export default function AdminContactPage() {
     });
   };
 
-  if (!data) return <p className="text-sm text-[#888]">Loading...</p>;
+  if (!data) {
+    return (
+      <div className="flex items-center justify-center h-48">
+        <div className="w-5 h-5 border-2 border-[#ddd] border-t-[#222] rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-xl space-y-6">
       <h2 className="text-lg font-semibold text-[#222]">Contact Page</h2>
 
-      <div>
-        <FormField label="Hero Image URL" value={data.heroImage} onChange={(v) => setData({ ...data, heroImage: v })} type="url" />
-        <ImagePreview src={data.heroImage} />
-      </div>
+      <ImageUploader
+        label="Hero Image"
+        value={data.heroImage}
+        onChange={(url) => setData({ ...data, heroImage: url })}
+        maxWidth={2400}
+        maxHeight={1600}
+      />
 
-      <FormField label="Heading" value={data.heading} onChange={(v) => setData({ ...data, heading: v })} />
-      <FormField label="Intro Text" value={data.introText} onChange={(v) => setData({ ...data, introText: v })} multiline rows={3} />
-      <FormField label="Contact Email" value={data.email} onChange={(v) => setData({ ...data, email: v })} type="email" />
+      <FormField
+        label="Heading"
+        value={data.heading}
+        onChange={(v) => setData({ ...data, heading: v })}
+      />
+      <FormField
+        label="Intro Text"
+        value={data.introText}
+        onChange={(v) => setData({ ...data, introText: v })}
+        multiline
+        rows={3}
+      />
+      <FormField
+        label="Contact Email"
+        value={data.email}
+        onChange={(v) => setData({ ...data, email: v })}
+        type="email"
+      />
 
       <SaveButton onClick={save} />
     </div>
