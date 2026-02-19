@@ -52,8 +52,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect POST to seed endpoint
-  if (pathname === "/api/content/seed" && request.method === "POST") {
+  // Protect POST to content API endpoints (seed, migrate-images, etc.)
+  if (pathname.startsWith("/api/content") && request.method === "POST") {
     const authed = await isAuthenticated(request);
     if (!authed) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
