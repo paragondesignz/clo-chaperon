@@ -28,7 +28,7 @@ export default function LoginForm() {
         return;
       }
 
-      router.push("/admin");
+      window.location.href = "/admin";
     } catch {
       setError("Something went wrong");
     } finally {
