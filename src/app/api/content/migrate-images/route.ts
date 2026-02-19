@@ -23,6 +23,7 @@ async function migrateImage(url: string): Promise<string> {
   const blob = await put(blobPath, Buffer.from(buffer), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType,
   });
 
@@ -108,6 +109,7 @@ export async function POST() {
     await put(BLOB_PATH, JSON.stringify(updated, null, 2), {
       access: "public",
       addRandomSuffix: false,
+      allowOverwrite: true,
       contentType: "application/json",
     });
 
