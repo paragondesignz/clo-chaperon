@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { raleway, playfair } from "@/lib/fonts";
+import { raleway } from "@/lib/fonts";
 import Navigation from "@/components/layout/Navigation";
 import Footer from "@/components/layout/Footer";
 import { SITE } from "@/lib/constants";
@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${raleway.variable} ${playfair.variable} antialiased`}
+        className={`${raleway.variable} antialiased`}
       >
         <Navigation />
         <main>{children}</main>

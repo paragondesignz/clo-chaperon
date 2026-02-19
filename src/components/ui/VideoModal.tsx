@@ -44,12 +44,12 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-lg flex items-center justify-center p-6"
+          className="fixed inset-0 z-50 bg-white/95 backdrop-blur-lg flex items-center justify-center p-6"
           onClick={onClose}
         >
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 text-text-secondary hover:text-text-primary transition-colors z-10"
+            className="absolute top-6 right-6 text-text-tertiary hover:text-text-primary transition-colors z-10"
             aria-label="Close video"
           >
             <X size={28} />
@@ -68,11 +68,11 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
               src={video.src}
               controls
               autoPlay
-              className="w-full rounded-lg shadow-2xl"
+              className="w-full rounded shadow-xl"
             >
               Your browser does not support the video tag.
             </video>
-            <p className="text-center text-text-primary font-heading text-lg mt-4">
+            <p className="text-center text-text-primary text-lg mt-4 font-semibold">
               {video.title}
             </p>
             <p className="text-center text-text-secondary text-sm mt-1">

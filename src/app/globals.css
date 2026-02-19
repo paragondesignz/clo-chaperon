@@ -1,31 +1,30 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #0A0A0A;
-  --color-background-alt: #111111;
-  --color-surface: #1A1A1A;
-  --color-border: #2A2A2A;
-  --color-text-primary: #F5F0E8;
-  --color-text-secondary: #A09882;
-  --color-accent-gold: #C9A84C;
-  --color-accent-gold-light: #E8D5A0;
-  --font-heading: var(--font-playfair);
+  --color-background: #ffffff;
+  --color-background-alt: #f9f9f9;
+  --color-surface: #ffffff;
+  --color-border: #eeeeee;
+  --color-text-primary: #222222;
+  --color-text-secondary: #555555;
+  --color-text-tertiary: #888888;
+  --color-accent: #000000;
   --font-body: var(--font-raleway);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-text-primary);
-  font-family: var(--font-body), sans-serif;
+  font-family: var(--font-body), "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading), serif;
+  font-family: var(--font-body), "Avenir", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 ::selection {
-  background: var(--color-accent-gold);
-  color: var(--color-background);
+  background: #000;
+  color: #fff;
 }
 
 /* Scrollbar styling */
@@ -34,14 +33,36 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-background);
+  background: #f9f9f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: #ccc;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-secondary);
+  background: #999;
+}
+
+/* Underline input focus animation */
+.input-underline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #ccc;
+  border-radius: 0;
+  outline: none;
+  padding: 12px 0;
+  width: 100%;
+  font-size: 1rem;
+  color: #222;
+  transition: border-color 0.3s ease;
+}
+
+.input-underline:focus {
+  border-bottom-color: #000;
+}
+
+.input-underline::placeholder {
+  color: #999;
 }

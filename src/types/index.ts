@@ -14,6 +14,9 @@ export interface Video {
   duration: string;
   id: string;
   src?: string;
+  thumbnail?: string;
+  venue?: string;
+  musicians?: string;
 }
 
 export interface GalleryImage {

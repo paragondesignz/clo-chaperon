@@ -17,15 +17,14 @@ export default function SectionHeading({ title, subtitle }: SectionHeadingProps)
       viewport={{ once: true, margin: "-80px" }}
       className="text-center mb-12"
     >
-      <h2 className="text-4xl md:text-5xl font-light tracking-wide text-text-primary">
+      <h2 className="text-[1.5rem] font-normal tracking-wide text-text-primary">
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-3 text-text-secondary tracking-widest text-sm uppercase">
+        <p className="mt-2 text-text-secondary text-sm">
           {subtitle}
         </p>
       )}
-      <div className="mt-4 mx-auto w-16 h-px bg-accent-gold" />
     </motion.div>
   );
 }

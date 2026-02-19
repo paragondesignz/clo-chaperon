@@ -53,12 +53,12 @@ export default function LightboxModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 bg-background/95 backdrop-blur-lg flex items-center justify-center"
+          className="fixed inset-0 z-50 bg-white/95 backdrop-blur-lg flex items-center justify-center"
           onClick={onClose}
         >
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 text-text-secondary hover:text-text-primary transition-colors z-10"
+            className="absolute top-6 right-6 text-text-tertiary hover:text-text-primary transition-colors z-10"
             aria-label="Close lightbox"
           >
             <X size={28} />
@@ -69,7 +69,7 @@ export default function LightboxModal({
               e.stopPropagation();
               onPrev();
             }}
-            className="absolute left-4 md:left-8 text-text-secondary hover:text-accent-gold transition-colors z-10"
+            className="absolute left-4 md:left-8 text-text-tertiary hover:text-text-primary transition-colors z-10"
             aria-label="Previous image"
           >
             <ChevronLeft size={36} />
@@ -80,7 +80,7 @@ export default function LightboxModal({
               e.stopPropagation();
               onNext();
             }}
-            className="absolute right-4 md:right-8 text-text-secondary hover:text-accent-gold transition-colors z-10"
+            className="absolute right-4 md:right-8 text-text-tertiary hover:text-text-primary transition-colors z-10"
             aria-label="Next image"
           >
             <ChevronRight size={36} />
@@ -100,10 +100,10 @@ export default function LightboxModal({
               alt={current.alt}
               width={current.width}
               height={current.height}
-              className="w-full h-auto max-h-[80vh] object-contain rounded-lg"
+              className="w-full h-auto max-h-[80vh] object-contain"
               unoptimized
             />
-            <p className="text-center text-text-secondary text-sm mt-4 tracking-wider">
+            <p className="text-center text-text-tertiary text-sm mt-4">
               {currentIndex + 1} / {images.length}
             </p>
           </motion.div>
