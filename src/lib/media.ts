@@ -6,12 +6,14 @@ const BLOB_PATH = "media.json";
 async function readMedia(): Promise<MediaLibrary> {
   try {
     const { blobs } = await list({ prefix: BLOB_PATH, limit: 1 });
-    if (blobs.length === 0) return { items: [] };
+    if (blobs.length === 0) return { items: [], dismissedUrls: [] };
     const response = await fetch(blobs[0].url, { cache: "no-store" });
-    if (!response.ok) return { items: [] };
-    return (await response.json()) as MediaLibrary;
+    if (!response.ok) return { items: [], dismissedUrls: [] };
+    const data = (await response.json()) as MediaLibrary;
+    if (!data.dismissedUrls) data.dismissedUrls = [];
+    return data;
   } catch {
-    return { items: [] };
+    return { items: [], dismissedUrls: [] };
   }
 }
 
@@ -36,7 +38,14 @@ export async function addMediaItem(item: MediaItem): Promise<MediaLibrary> {
 
 export async function deleteMediaItem(id: string): Promise<MediaLibrary> {
   const library = await readMedia();
-  library.items = library.items.filter((item) => item.id !== id);
+  const item = library.items.find((i) => i.id === id);
+  if (item) {
+    library.dismissedUrls = library.dismissedUrls ?? [];
+    if (!library.dismissedUrls.includes(item.url)) {
+      library.dismissedUrls.push(item.url);
+    }
+  }
+  library.items = library.items.filter((i) => i.id !== id);
   await writeMedia(library);
   return library;
 }

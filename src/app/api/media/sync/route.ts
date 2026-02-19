@@ -29,6 +29,7 @@ export async function POST() {
     const content = await getContent();
     const library = await getMediaLibrary();
     const existingUrls = new Set(library.items.map((i) => i.url));
+    const dismissed = new Set(library.dismissedUrls ?? []);
 
     const urlEntries: {
       url: string;
@@ -40,6 +41,7 @@ export async function POST() {
     function addUrl(url: string | undefined, type: "image" | "video", width?: number, height?: number) {
       if (!url || url.trim() === "") return;
       if (existingUrls.has(url)) return;
+      if (dismissed.has(url)) return;
       if (urlEntries.some((e) => e.url === url)) return;
       urlEntries.push({ url, type, width, height });
     }

@@ -11,4 +11,5 @@ export interface MediaItem {
 
 export interface MediaLibrary {
   items: MediaItem[];
+  dismissedUrls?: string[];
 }

@@ -45,20 +45,15 @@ export default function AdminMediaPage() {
   const [syncing, setSyncing] = useState(false);
   const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const syncAttempted = useRef(false);
 
   const fetchMedia = useCallback(() => {
-    return fetch("/api/media")
+    fetch("/api/media")
       .then((r) => r.json())
       .then((data) => {
         setItems(data.items || []);
         setLoading(false);
-        return data.items || [];
       })
-      .catch(() => {
-        setLoading(false);
-        return [];
-      });
+      .catch(() => setLoading(false));
   }, []);
 
   const runSync = useCallback(async () => {
@@ -81,13 +76,8 @@ export default function AdminMediaPage() {
   }, [fetchMedia]);
 
   useEffect(() => {
-    fetchMedia().then((mediaItems: MediaItem[]) => {
-      if (!syncAttempted.current && mediaItems.length === 0) {
-        syncAttempted.current = true;
-        runSync();
-      }
-    });
-  }, [fetchMedia, runSync]);
+    fetchMedia();
+  }, [fetchMedia]);
 
   const uploadFile = useCallback(
     async (file: File) => {
