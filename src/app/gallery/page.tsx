@@ -31,7 +31,7 @@ export default function GalleryPage() {
       <section className="pt-32 pb-20 px-6">
         <SectionHeading title="Gallery" />
 
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))" }}>
+        <div className="max-w-6xl mx-auto columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
           {GALLERY_IMAGES.map((image, i) => (
             <motion.div
               key={image.id}
@@ -40,7 +40,7 @@ export default function GalleryPage() {
               whileInView="visible"
               viewport={{ once: true, margin: "-40px" }}
               transition={{ delay: i * 0.03 }}
-              className="cursor-pointer group relative overflow-hidden"
+              className="break-inside-avoid cursor-pointer group relative overflow-hidden"
               onClick={() => openLightbox(i)}
             >
               <Image
@@ -48,7 +48,7 @@ export default function GalleryPage() {
                 alt={image.alt}
                 width={image.width}
                 height={image.height}
-                className="w-full h-[280px] object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                className="w-full h-auto object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                 unoptimized
               />
             </motion.div>
