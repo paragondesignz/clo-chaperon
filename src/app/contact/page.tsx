@@ -35,7 +35,7 @@ export default function ContactPage() {
   return (
     <>
       {/* Hero strip */}
-      <section className="relative h-[40vh] min-h-[280px] overflow-hidden">
+      <section className="relative h-[65vh] min-h-[400px] overflow-hidden">
         <Image
           src="https://static.wixstatic.com/media/24c59a_5c83a80a995f4f5e95edbe118bad56ee~mv2.jpg"
           alt="Clo Chaperon"
