@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import AnimatedSection from "@/components/ui/AnimatedSection";
-import { BIO_PARAGRAPHS, ABOUT_HERO_IMAGE, PULL_QUOTES } from "@/lib/constants";
+import { getSection } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "About",
 };
 
+export const revalidate = 60;
+
 function PullQuote({ quote, delay = 0 }: { quote: string; delay?: number }) {
-  const text = quote.replace(/^"|"$/g, "");
+  const text = quote.replace(/^[\u201c"]/g, "").replace(/[\u201d"]$/g, "");
   return (
     <AnimatedSection delay={delay}>
       <blockquote className="relative my-16 md:my-20 max-w-2xl mx-auto text-center px-4">
@@ -26,13 +28,15 @@ function PullQuote({ quote, delay = 0 }: { quote: string; delay?: number }) {
   );
 }
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const about = await getSection("about");
+
   return (
     <>
       {/* Hero Image */}
       <section className="relative h-[65vh] min-h-[400px] overflow-hidden">
         <Image
-          src={ABOUT_HERO_IMAGE}
+          src={about.heroImage}
           alt="Clo Chaperon"
           fill
           className="object-cover object-top"
@@ -44,7 +48,7 @@ export default function AboutPage() {
       {/* Bio — first group (paragraphs 0–1): childhood & classical */}
       <section className="py-20 px-6">
         <div className="max-w-[820px] mx-auto">
-          {BIO_PARAGRAPHS.slice(0, 2).map((paragraph, i) => (
+          {about.bioParagraphs.slice(0, 2).map((paragraph, i) => (
             <AnimatedSection key={i} delay={i * 0.05}>
               <p
                 className="text-[#333] text-base leading-[1.8] mb-6"
@@ -57,13 +61,13 @@ export default function AboutPage() {
 
       {/* Pull quote 1 — Debussy / colours */}
       <section className="bg-[#f9f9f9] py-8">
-        <PullQuote quote={PULL_QUOTES[0]} />
+        <PullQuote quote={about.pullQuotes[0]} />
       </section>
 
       {/* Bio — second group (paragraphs 2–3): jazz discovery */}
       <section className="py-20 px-6">
         <div className="max-w-[820px] mx-auto">
-          {BIO_PARAGRAPHS.slice(2, 4).map((paragraph, i) => (
+          {about.bioParagraphs.slice(2, 4).map((paragraph, i) => (
             <AnimatedSection key={i} delay={i * 0.05}>
               <p
                 className="text-[#333] text-base leading-[1.8] mb-6"
@@ -78,7 +82,7 @@ export default function AboutPage() {
       <AnimatedSection>
         <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
           <Image
-            src="https://static.wixstatic.com/media/24c59a_0263d54006c64f688039760551c58f51~mv2_d_3000_2000_s_2.jpg"
+            src={about.midImage}
             alt="Clo Chaperon performing"
             fill
             className="object-cover object-center"
@@ -89,13 +93,13 @@ export default function AboutPage() {
 
       {/* Pull quote 2 — genuineness */}
       <section className="bg-[#f9f9f9] py-8">
-        <PullQuote quote={`"I love music that makes me feel something, whether it's through groove, harmony, lyrics, or melody."`} />
+        <PullQuote quote={about.pullQuotes[2]} />
       </section>
 
       {/* Bio — third group (paragraphs 4–6): jazz philosophy & originals */}
       <section className="py-20 px-6">
         <div className="max-w-[820px] mx-auto">
-          {BIO_PARAGRAPHS.slice(4).map((paragraph, i) => (
+          {about.bioParagraphs.slice(4).map((paragraph, i) => (
             <AnimatedSection key={i} delay={i * 0.05}>
               <p
                 className="text-[#333] text-base leading-[1.8] mb-6"
@@ -108,7 +112,7 @@ export default function AboutPage() {
 
       {/* Closing quote */}
       <section className="border-t border-[#eee] py-8">
-        <PullQuote quote={PULL_QUOTES[2]} />
+        <PullQuote quote={about.pullQuotes[3]} />
       </section>
     </>
   );

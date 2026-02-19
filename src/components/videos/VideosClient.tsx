@@ -4,11 +4,14 @@ import { useState } from "react";
 import SectionHeading from "@/components/ui/SectionHeading";
 import VideoCard from "@/components/ui/VideoCard";
 import VideoModal from "@/components/ui/VideoModal";
-import { VIDEOS } from "@/lib/constants";
-import type { Video } from "@/types";
+import type { VideoItem } from "@/types/content";
 
-export default function VideosPage() {
-  const [activeVideo, setActiveVideo] = useState<Video | null>(null);
+interface VideosClientProps {
+  items: VideoItem[];
+}
+
+export default function VideosClient({ items }: VideosClientProps) {
+  const [activeVideo, setActiveVideo] = useState<VideoItem | null>(null);
 
   return (
     <>
@@ -19,7 +22,7 @@ export default function VideosPage() {
         />
 
         <div className="max-w-5xl mx-auto grid gap-[30px]" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
-          {VIDEOS.map((video) => (
+          {items.map((video) => (
             <VideoCard
               key={video.id}
               {...video}

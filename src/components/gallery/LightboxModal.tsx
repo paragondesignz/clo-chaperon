@@ -4,7 +4,7 @@ import { useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import type { GalleryImage } from "@/types";
+import type { GalleryImage } from "@/types/content";
 
 interface LightboxModalProps {
   images: GalleryImage[];

@@ -4,7 +4,11 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { fadeInUp } from "@/lib/animations";
 
-export default function ContactForm() {
+interface ContactFormProps {
+  email?: string;
+}
+
+export default function ContactForm({ email = "hello@clochaperon.com" }: ContactFormProps) {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -13,7 +17,7 @@ export default function ContactForm() {
     const body = encodeURIComponent(
       `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
     );
-    window.location.href = `mailto:hello@clochaperon.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   };
 
   return (

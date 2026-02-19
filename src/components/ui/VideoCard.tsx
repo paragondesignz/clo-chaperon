@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Play, Clock } from "lucide-react";
 import { fadeInUp } from "@/lib/animations";
-import type { Video } from "@/types";
+import type { VideoItem } from "@/types/content";
 
-interface VideoCardProps extends Video {
+interface VideoCardProps extends VideoItem {
   onClick?: () => void;
 }
 

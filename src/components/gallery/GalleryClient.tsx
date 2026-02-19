@@ -5,10 +5,14 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import SectionHeading from "@/components/ui/SectionHeading";
 import LightboxModal from "@/components/gallery/LightboxModal";
-import { GALLERY_IMAGES } from "@/lib/constants";
 import { fadeInUp } from "@/lib/animations";
+import type { GalleryImage } from "@/types/content";
 
-export default function GalleryPage() {
+interface GalleryClientProps {
+  images: GalleryImage[];
+}
+
+export default function GalleryClient({ images }: GalleryClientProps) {
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
   const openLightbox = (index: number) => setLightboxIndex(index);
@@ -16,15 +20,15 @@ export default function GalleryPage() {
 
   const goToPrev = useCallback(() => {
     setLightboxIndex((prev) =>
-      prev <= 0 ? GALLERY_IMAGES.length - 1 : prev - 1
+      prev <= 0 ? images.length - 1 : prev - 1
     );
-  }, []);
+  }, [images.length]);
 
   const goToNext = useCallback(() => {
     setLightboxIndex((prev) =>
-      prev >= GALLERY_IMAGES.length - 1 ? 0 : prev + 1
+      prev >= images.length - 1 ? 0 : prev + 1
     );
-  }, []);
+  }, [images.length]);
 
   return (
     <>
@@ -32,7 +36,7 @@ export default function GalleryPage() {
         <SectionHeading title="Gallery" />
 
         <div className="max-w-6xl mx-auto columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-          {GALLERY_IMAGES.map((image, i) => (
+          {images.map((image, i) => (
             <motion.div
               key={image.id}
               variants={fadeInUp}
@@ -57,7 +61,7 @@ export default function GalleryPage() {
       </section>
 
       <LightboxModal
-        images={GALLERY_IMAGES}
+        images={images}
         currentIndex={lightboxIndex}
         isOpen={lightboxIndex >= 0}
         onClose={closeLightbox}

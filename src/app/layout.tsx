@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
 import { raleway } from "@/lib/fonts";
-import Navigation from "@/components/layout/Navigation";
-import Footer from "@/components/layout/Footer";
-import { SITE } from "@/lib/constants";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: `${SITE.name} — ${SITE.tagline}`,
-    template: `%s | ${SITE.name}`,
+    default: "Clo Chaperon — Jazz Vocalist",
+    template: "%s | Clo Chaperon",
   },
-  description: SITE.description,
+  description:
+    "Clo Chaperon — Auckland-based jazz vocalist blending Mauritian heritage with the freedom of jazz.",
 };
 
 export default function RootLayout({
@@ -20,12 +18,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${raleway.variable} antialiased`}
-      >
-        <Navigation />
-        <main>{children}</main>
-        <Footer />
+      <body className={`${raleway.variable} antialiased`}>
+        {children}
       </body>
     </html>
   );

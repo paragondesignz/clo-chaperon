@@ -3,10 +3,10 @@
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import type { Video } from "@/types";
+import type { VideoItem } from "@/types/content";
 
 interface VideoModalProps {
-  video: Video | null;
+  video: VideoItem | null;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -76,15 +76,16 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
               <p className="text-white text-lg font-semibold">
                 {video.title}
               </p>
-              <p className="text-white/70 text-sm mt-2">
-                The Ellington Jazz Club, Perth Western Australia
-              </p>
-              <div className="text-white/50 text-sm mt-3 space-y-0.5">
-                <p>Vocals &ndash; Clo Chaperon</p>
-                <p>Piano &ndash; Brodie Stewart</p>
-                <p>Bass &ndash; Nick Abbey</p>
-                <p>Drums &ndash; Michael Perkins</p>
-              </div>
+              {video.venue && (
+                <p className="text-white/70 text-sm mt-2">
+                  {video.venue}
+                </p>
+              )}
+              {video.musicians && (
+                <p className="text-white/50 text-sm mt-3">
+                  {video.musicians}
+                </p>
+              )}
             </div>
           </motion.div>
         </motion.div>

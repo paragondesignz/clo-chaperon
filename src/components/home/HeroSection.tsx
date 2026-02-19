@@ -2,9 +2,12 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { HERO_IMAGE } from "@/lib/constants";
 
-export default function HeroSection() {
+interface HeroSectionProps {
+  heroImage: string;
+}
+
+export default function HeroSection({ heroImage }: HeroSectionProps) {
   return (
     <section className="relative h-[75vh] overflow-hidden">
       <motion.div
@@ -14,7 +17,7 @@ export default function HeroSection() {
         className="absolute inset-0"
       >
         <Image
-          src={HERO_IMAGE}
+          src={heroImage}
           alt="Clo Chaperon"
           fill
           className="object-cover"

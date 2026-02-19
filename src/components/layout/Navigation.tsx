@@ -5,7 +5,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { NAV_LINKS, SOCIAL_LINKS, SITE } from "@/lib/constants";
+import { NAV_LINKS } from "@/lib/constants";
+import type { SiteSection, SocialLink } from "@/types/content";
+
+interface NavigationProps {
+  site: SiteSection;
+  socialLinks: SocialLink[];
+}
 
 const socialIcons: Record<string, React.ReactNode> = {
   instagram: (
@@ -30,7 +36,7 @@ const socialIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function Navigation() {
+export default function Navigation({ site, socialLinks }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
@@ -60,10 +66,10 @@ export default function Navigation() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="group">
             <span className="text-[1.4rem] font-semibold tracking-[0.05em] text-text-primary">
-              {SITE.name.toUpperCase()}
+              {site.name.toUpperCase()}
             </span>
             <span className="block text-xs tracking-[0.15em] text-text-secondary mt-0.5 font-light">
-              {SITE.tagline}
+              {site.tagline}
             </span>
           </Link>
 
@@ -84,7 +90,7 @@ export default function Navigation() {
           </nav>
 
           <div className="hidden md:flex items-center gap-4">
-            {SOCIAL_LINKS.map((social) => (
+            {socialLinks.map((social) => (
               <a
                 key={social.label}
                 href={social.href}
@@ -149,7 +155,7 @@ export default function Navigation() {
                 transition={{ delay: 0.5 }}
                 className="flex items-center gap-6 mt-8"
               >
-                {SOCIAL_LINKS.map((social) => (
+                {socialLinks.map((social) => (
                   <a
                     key={social.label}
                     href={social.href}

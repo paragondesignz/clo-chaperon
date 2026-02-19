@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import ContactForm from "@/components/contact/ContactForm";
-import { SOCIAL_LINKS } from "@/lib/constants";
+import { getSection } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Contact",
 };
+
+export const revalidate = 60;
 
 const socialIcons: Record<string, React.ReactNode> = {
   instagram: (
@@ -31,13 +33,18 @@ const socialIcons: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const [contact, social] = await Promise.all([
+    getSection("contact"),
+    getSection("social"),
+  ]);
+
   return (
     <>
       {/* Hero strip */}
       <section className="relative h-[65vh] min-h-[400px] overflow-hidden">
         <Image
-          src="https://static.wixstatic.com/media/24c59a_5c83a80a995f4f5e95edbe118bad56ee~mv2.jpg"
+          src={contact.heroImage}
           alt="Clo Chaperon"
           fill
           className="object-cover object-top"
@@ -48,7 +55,7 @@ export default function ContactPage() {
         <div className="absolute inset-0 flex items-center justify-center">
           <AnimatedSection>
             <h1 className="text-white text-3xl sm:text-4xl font-light tracking-[0.15em]">
-              GET IN TOUCH
+              {contact.heading}
             </h1>
           </AnimatedSection>
         </div>
@@ -58,15 +65,14 @@ export default function ContactPage() {
       <section className="pt-16 pb-4 px-6">
         <AnimatedSection>
           <p className="max-w-xl mx-auto text-center text-[#555] leading-relaxed">
-            For bookings, collaborations, or just to say hello &mdash;
-            I&rsquo;d love to hear from you.
+            {contact.introText}
           </p>
         </AnimatedSection>
       </section>
 
       {/* Form */}
       <section className="pt-8 pb-20 px-6">
-        <ContactForm />
+        <ContactForm email={contact.email} />
       </section>
 
       {/* Social links */}
@@ -76,16 +82,16 @@ export default function ContactPage() {
             Follow along
           </p>
           <div className="flex justify-center gap-5">
-            {SOCIAL_LINKS.map((social) => (
+            {social.links.map((link) => (
               <a
-                key={social.label}
-                href={social.href}
+                key={link.label}
+                href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={social.label}
+                aria-label={link.label}
                 className="text-[#888] hover:text-[#222] transition-colors"
               >
-                {socialIcons[social.icon]}
+                {socialIcons[link.icon]}
               </a>
             ))}
           </div>
