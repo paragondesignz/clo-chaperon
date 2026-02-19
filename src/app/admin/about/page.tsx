@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import ImageUploader from "@/components/admin/ImageUploader";
+import SectionCard from "@/components/admin/SectionCard";
 import SaveButton from "@/components/admin/SaveButton";
 import SortableList from "@/components/admin/SortableList";
 import type { AboutSection } from "@/types/content";
@@ -32,32 +33,35 @@ export default function AdminAboutPage() {
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <h2 className="text-lg font-semibold text-[#222]">About Page</h2>
-
-      <ImageUploader
-        label="Hero Image"
-        value={data.heroImage}
-        onChange={(url) => setData({ ...data, heroImage: url })}
-        maxWidth={2400}
-        maxHeight={1600}
-      />
-
-      <ImageUploader
-        label="Mid-page Image"
-        value={data.midImage}
-        onChange={(url) => setData({ ...data, midImage: url })}
-        maxWidth={1600}
-        maxHeight={1200}
-      />
-
+    <div className="max-w-2xl space-y-6">
       <div>
-        <label className="block text-xs font-medium text-[#888] uppercase tracking-wide mb-2">
-          Bio Paragraphs
-        </label>
-        <p className="text-xs text-[#aaa] mb-2">
-          HTML tags like &lt;strong&gt; and &lt;em&gt; are supported.
+        <h2 className="text-lg font-semibold text-[#222]">About Page</h2>
+        <p className="text-xs text-[#999] mt-1">
+          Tell visitors your story.
         </p>
+      </div>
+
+      <SectionCard title="Images" description="The hero banner and a mid-page feature image.">
+        <ImageUploader
+          label="Hero Image"
+          value={data.heroImage}
+          onChange={(url) => setData({ ...data, heroImage: url })}
+          maxWidth={2400}
+          maxHeight={1600}
+        />
+        <ImageUploader
+          label="Mid-page Image"
+          value={data.midImage}
+          onChange={(url) => setData({ ...data, midImage: url })}
+          maxWidth={1600}
+          maxHeight={1200}
+        />
+      </SectionCard>
+
+      <SectionCard
+        title="Biography"
+        description="Your bio paragraphs. HTML tags like <strong> and <em> are supported."
+      >
         <SortableList
           items={data.bioParagraphs}
           onChange={(items) => setData({ ...data, bioParagraphs: items })}
@@ -77,16 +81,14 @@ export default function AdminAboutPage() {
                 setData({ ...data, bioParagraphs: next });
               }}
               rows={4}
-              className="w-full border border-[#ddd] rounded px-3 py-2 text-sm text-[#222] focus:outline-none focus:border-[#222] resize-y transition-colors"
+              className="w-full rounded-lg border border-[#e0e0e0] px-4 py-3 text-sm text-[#222] leading-relaxed focus:outline-none focus:border-[#222] focus:ring-[3px] focus:ring-[#222]/5 resize-y transition-all placeholder:text-[#ccc]"
+              placeholder="Write a paragraph..."
             />
           )}
         />
-      </div>
+      </SectionCard>
 
-      <div>
-        <label className="block text-xs font-medium text-[#888] uppercase tracking-wide mb-2">
-          Pull Quotes
-        </label>
+      <SectionCard title="Pull Quotes" description="Highlighted quotes that break up the biography text.">
         <SortableList
           items={data.pullQuotes}
           onChange={(items) => setData({ ...data, pullQuotes: items })}
@@ -103,11 +105,12 @@ export default function AdminAboutPage() {
                 setData({ ...data, pullQuotes: next });
               }}
               rows={2}
-              className="w-full border border-[#ddd] rounded px-3 py-2 text-sm text-[#222] focus:outline-none focus:border-[#222] resize-y transition-colors"
+              className="w-full rounded-lg border border-[#e0e0e0] px-4 py-3 text-sm text-[#222] italic leading-relaxed focus:outline-none focus:border-[#222] focus:ring-[3px] focus:ring-[#222]/5 resize-y transition-all placeholder:text-[#ccc] placeholder:not-italic"
+              placeholder="Enter a quote..."
             />
           )}
         />
-      </div>
+      </SectionCard>
 
       <SaveButton onClick={save} />
     </div>

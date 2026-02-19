@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import FormField from "@/components/admin/FormField";
 import ImageUploader from "@/components/admin/ImageUploader";
+import SectionCard from "@/components/admin/SectionCard";
 import SaveButton from "@/components/admin/SaveButton";
 import type { ContactSection } from "@/types/content";
 
@@ -32,35 +33,47 @@ export default function AdminContactPage() {
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <h2 className="text-lg font-semibold text-[#222]">Contact Page</h2>
+    <div className="max-w-2xl space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-[#222]">Contact Page</h2>
+        <p className="text-xs text-[#999] mt-1">
+          How visitors can get in touch.
+        </p>
+      </div>
 
-      <ImageUploader
-        label="Hero Image"
-        value={data.heroImage}
-        onChange={(url) => setData({ ...data, heroImage: url })}
-        maxWidth={2400}
-        maxHeight={1600}
-      />
+      <SectionCard title="Hero" description="The banner image at the top of the contact page.">
+        <ImageUploader
+          label="Hero Image"
+          value={data.heroImage}
+          onChange={(url) => setData({ ...data, heroImage: url })}
+          maxWidth={2400}
+          maxHeight={1600}
+        />
+      </SectionCard>
 
-      <FormField
-        label="Heading"
-        value={data.heading}
-        onChange={(v) => setData({ ...data, heading: v })}
-      />
-      <FormField
-        label="Intro Text"
-        value={data.introText}
-        onChange={(v) => setData({ ...data, introText: v })}
-        multiline
-        rows={3}
-      />
-      <FormField
-        label="Contact Email"
-        value={data.email}
-        onChange={(v) => setData({ ...data, email: v })}
-        type="email"
-      />
+      <SectionCard title="Content" description="The heading, introductory text, and your contact email.">
+        <FormField
+          label="Heading"
+          value={data.heading}
+          onChange={(v) => setData({ ...data, heading: v })}
+          placeholder="e.g. Get in Touch"
+        />
+        <FormField
+          label="Intro Text"
+          value={data.introText}
+          onChange={(v) => setData({ ...data, introText: v })}
+          multiline
+          rows={3}
+          hint="A friendly message inviting visitors to reach out."
+        />
+        <FormField
+          label="Contact Email"
+          value={data.email}
+          onChange={(v) => setData({ ...data, email: v })}
+          type="email"
+          placeholder="you@example.com"
+        />
+      </SectionCard>
 
       <SaveButton onClick={save} />
     </div>

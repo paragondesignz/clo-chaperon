@@ -68,8 +68,8 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect media API (DELETE requires auth, GET is fine for admin pages)
-  if (pathname.startsWith("/api/media") && request.method === "DELETE") {
+  // Protect media API (POST and DELETE require auth)
+  if (pathname.startsWith("/api/media") && (request.method === "DELETE" || request.method === "POST")) {
     const authed = await isAuthenticated(request);
     if (!authed) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

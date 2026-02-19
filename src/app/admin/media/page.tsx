@@ -10,6 +10,7 @@ import {
   Film,
   Trash2,
   Maximize2,
+  RefreshCw,
 } from "lucide-react";
 import AdminLightbox from "@/components/admin/AdminLightbox";
 import type { MediaItem } from "@/types/media";
@@ -41,21 +42,52 @@ export default function AdminMediaPage() {
   const [lightboxItem, setLightboxItem] = useState<MediaItem | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [uploads, setUploads] = useState<UploadTask[]>([]);
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const syncAttempted = useRef(false);
 
   const fetchMedia = useCallback(() => {
-    fetch("/api/media")
+    return fetch("/api/media")
       .then((r) => r.json())
       .then((data) => {
         setItems(data.items || []);
         setLoading(false);
+        return data.items || [];
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        setLoading(false);
+        return [];
+      });
   }, []);
 
-  useEffect(() => {
-    fetchMedia();
+  const runSync = useCallback(async () => {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const res = await fetch("/api/media/sync", { method: "POST" });
+      const data = await res.json();
+      if (data.added > 0) {
+        setSyncMsg(`Synced ${data.added} file${data.added !== 1 ? "s" : ""} from site content`);
+        fetchMedia();
+      } else {
+        setSyncMsg("Everything is up to date");
+      }
+    } catch {
+      setSyncMsg("Sync failed");
+    }
+    setSyncing(false);
+    setTimeout(() => setSyncMsg(null), 4000);
   }, [fetchMedia]);
+
+  useEffect(() => {
+    fetchMedia().then((mediaItems: MediaItem[]) => {
+      if (!syncAttempted.current && mediaItems.length === 0) {
+        syncAttempted.current = true;
+        runSync();
+      }
+    });
+  }, [fetchMedia, runSync]);
 
   const uploadFile = useCallback(
     async (file: File) => {
@@ -181,15 +213,35 @@ export default function AdminMediaPage() {
             {videoCount !== 1 ? "s" : ""}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          className="flex items-center gap-1.5 bg-black text-white text-xs font-medium px-4 py-2 rounded hover:opacity-80 transition-opacity"
-        >
-          <Upload size={14} />
-          Upload Files
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={runSync}
+            disabled={syncing}
+            className="flex items-center gap-1.5 border border-[#ddd] text-[#555] text-xs font-medium px-3 py-2 rounded hover:border-[#bbb] hover:bg-[#f5f5f5] transition-colors disabled:opacity-50"
+          >
+            <RefreshCw size={13} className={syncing ? "animate-spin" : ""} />
+            Sync from Content
+          </button>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="flex items-center gap-1.5 bg-black text-white text-xs font-medium px-4 py-2 rounded hover:opacity-80 transition-opacity"
+          >
+            <Upload size={14} />
+            Upload Files
+          </button>
+        </div>
       </div>
+
+      {syncMsg && (
+        <div className="flex items-center gap-2 text-xs bg-[#fafafa] border border-[#eee] rounded px-3 py-2">
+          {syncing ? (
+            <div className="w-3 h-3 border border-[#ddd] border-t-[#222] rounded-full animate-spin" />
+          ) : null}
+          <span className="text-[#555]">{syncMsg}</span>
+        </div>
+      )}
 
       <input
         ref={inputRef}

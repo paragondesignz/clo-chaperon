@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import ImageUploader from "@/components/admin/ImageUploader";
+import SectionCard from "@/components/admin/SectionCard";
 import SaveButton from "@/components/admin/SaveButton";
 import SortableList from "@/components/admin/SortableList";
 import type { VideosSection, VideoItem } from "@/types/content";
@@ -82,6 +83,9 @@ async function uploadThumbnailBlob(blob: Blob): Promise<string> {
   return data.url;
 }
 
+const inputClass =
+  "w-full rounded-lg border border-[#e0e0e0] bg-white px-3 py-2 text-sm text-[#222] focus:outline-none focus:border-[#222] focus:ring-[3px] focus:ring-[#222]/5 transition-all placeholder:text-[#ccc]";
+
 export default function AdminVideosPage() {
   const [data, setData] = useState<VideosSection | null>(null);
   const [thumbStatus, setThumbStatus] = useState<Record<string, "generating" | "done" | "error">>({});
@@ -156,83 +160,116 @@ export default function AdminVideosPage() {
   }
 
   return (
-    <div className="max-w-xl space-y-6">
-      <h2 className="text-lg font-semibold text-[#222]">Videos</h2>
+    <div className="max-w-2xl space-y-6">
+      <div>
+        <h2 className="text-lg font-semibold text-[#222]">Videos</h2>
+        <p className="text-xs text-[#999] mt-1">
+          Performance videos with metadata. Thumbnails are auto-generated on upload.
+        </p>
+      </div>
 
-      <SortableList
-        items={data.items}
-        onChange={(items) => setData({ ...data, items })}
-        onAdd={() => setData({ ...data, items: [...data.items, newVideo()] })}
-        addLabel="Add video"
-        renderItem={(item, i) => {
-          const status = thumbStatus[item.id];
-          return (
-            <div className="space-y-3 border border-[#eee] rounded-lg p-4">
-              <input
-                value={item.title}
-                onChange={(e) => updateItem(i, { title: e.target.value })}
-                placeholder="Title"
-                className="w-full border border-[#ddd] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#222] transition-colors"
-              />
-              <div className="grid grid-cols-2 gap-2">
-                <input
-                  value={item.duration}
-                  onChange={(e) => updateItem(i, { duration: e.target.value })}
-                  placeholder="Duration (e.g. 1:23)"
-                  className="border border-[#ddd] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#222] transition-colors"
-                />
-                <input
-                  value={item.venue || ""}
-                  onChange={(e) => updateItem(i, { venue: e.target.value })}
-                  placeholder="Venue"
-                  className="border border-[#ddd] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#222] transition-colors"
-                />
-              </div>
-              <input
-                value={item.musicians || ""}
-                onChange={(e) => updateItem(i, { musicians: e.target.value })}
-                placeholder="Musicians"
-                className="w-full border border-[#ddd] rounded px-3 py-1.5 text-sm focus:outline-none focus:border-[#222] transition-colors"
-              />
-
-              <div className="grid grid-cols-2 gap-3">
+      <SectionCard title="Video Library" description="Add, reorder, or remove video entries.">
+        <SortableList
+          items={data.items}
+          onChange={(items) => setData({ ...data, items })}
+          onAdd={() => setData({ ...data, items: [...data.items, newVideo()] })}
+          addLabel="Add video"
+          renderItem={(item, i) => {
+            const status = thumbStatus[item.id];
+            return (
+              <div className="space-y-3 rounded-lg border border-[#e8e8e8] bg-[#fafafa] p-4">
+                {/* Title */}
                 <div>
+                  <label className="block text-[10px] font-semibold text-[#bbb] uppercase tracking-wider mb-1">
+                    Title
+                  </label>
+                  <input
+                    value={item.title}
+                    onChange={(e) => updateItem(i, { title: e.target.value })}
+                    placeholder="e.g. Caro Nome — Rigoletto"
+                    className={inputClass}
+                  />
+                </div>
+
+                {/* Duration + Venue */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#bbb] uppercase tracking-wider mb-1">
+                      Duration
+                    </label>
+                    <input
+                      value={item.duration}
+                      onChange={(e) => updateItem(i, { duration: e.target.value })}
+                      placeholder="e.g. 3:45"
+                      className={inputClass}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-semibold text-[#bbb] uppercase tracking-wider mb-1">
+                      Venue
+                    </label>
+                    <input
+                      value={item.venue || ""}
+                      onChange={(e) => updateItem(i, { venue: e.target.value })}
+                      placeholder="e.g. Sydney Opera House"
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
+
+                {/* Musicians */}
+                <div>
+                  <label className="block text-[10px] font-semibold text-[#bbb] uppercase tracking-wider mb-1">
+                    Musicians
+                  </label>
+                  <input
+                    value={item.musicians || ""}
+                    onChange={(e) => updateItem(i, { musicians: e.target.value })}
+                    placeholder="e.g. With John Smith, piano"
+                    className={inputClass}
+                  />
+                </div>
+
+                {/* Media uploads */}
+                <div className="grid grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <ImageUploader
+                      label="Thumbnail"
+                      value={item.thumbnail || ""}
+                      onChange={(url) => updateItem(i, { thumbnail: url || undefined })}
+                      maxWidth={800}
+                      maxHeight={600}
+                      compact
+                    />
+                    {status === "generating" && (
+                      <div className="flex items-center gap-2 mt-1.5">
+                        <div className="w-3 h-3 border border-[#ddd] border-t-[#222] rounded-full animate-spin" />
+                        <span className="text-[10px] text-[#888]">Auto-generating...</span>
+                      </div>
+                    )}
+                    {status === "done" && (
+                      <p className="text-[10px] text-green-600 mt-1.5">Thumbnail generated</p>
+                    )}
+                    {status === "error" && (
+                      <p className="text-[10px] text-[#aaa] mt-1.5">Auto-thumbnail failed</p>
+                    )}
+                  </div>
                   <ImageUploader
-                    label="Thumbnail"
-                    value={item.thumbnail || ""}
-                    onChange={(url) => updateItem(i, { thumbnail: url || undefined })}
-                    maxWidth={800}
-                    maxHeight={600}
+                    label="Video File"
+                    value={item.src || ""}
+                    onChange={(url) => {
+                      updateItem(i, { src: url || undefined });
+                      if (url) handleVideoUploaded(i, url);
+                    }}
+                    accept="video/*"
                     compact
                   />
-                  {status === "generating" && (
-                    <div className="flex items-center gap-2 mt-1.5">
-                      <div className="w-3 h-3 border border-[#ddd] border-t-[#222] rounded-full animate-spin" />
-                      <span className="text-[10px] text-[#888]">Auto-generating...</span>
-                    </div>
-                  )}
-                  {status === "done" && (
-                    <p className="text-[10px] text-green-600 mt-1.5">Thumbnail generated</p>
-                  )}
-                  {status === "error" && (
-                    <p className="text-[10px] text-[#aaa] mt-1.5">Auto-thumbnail failed — upload manually</p>
-                  )}
                 </div>
-                <ImageUploader
-                  label="Video File"
-                  value={item.src || ""}
-                  onChange={(url) => {
-                    updateItem(i, { src: url || undefined });
-                    if (url) handleVideoUploaded(i, url);
-                  }}
-                  accept="video/*"
-                  compact
-                />
               </div>
-            </div>
-          );
-        }}
-      />
+            );
+          }}
+        />
+      </SectionCard>
 
       <SaveButton onClick={save} />
     </div>
