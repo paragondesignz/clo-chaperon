@@ -44,12 +44,12 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 bg-white/95 backdrop-blur-lg flex items-center justify-center p-6"
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-6"
           onClick={onClose}
         >
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 text-text-tertiary hover:text-text-primary transition-colors z-10"
+            className="absolute top-6 right-6 text-white/60 hover:text-white transition-colors z-10"
             aria-label="Close video"
           >
             <X size={28} />
@@ -68,16 +68,24 @@ export default function VideoModal({ video, isOpen, onClose }: VideoModalProps) 
               src={video.src}
               controls
               autoPlay
-              className="w-full rounded shadow-xl"
+              className="w-full rounded shadow-2xl"
             >
               Your browser does not support the video tag.
             </video>
-            <p className="text-center text-text-primary text-lg mt-4 font-semibold">
-              {video.title}
-            </p>
-            <p className="text-center text-text-secondary text-sm mt-1">
-              {video.duration}
-            </p>
+            <div className="mt-5 text-center">
+              <p className="text-white text-lg font-semibold">
+                {video.title}
+              </p>
+              <p className="text-white/70 text-sm mt-2">
+                The Ellington Jazz Club, Perth Western Australia
+              </p>
+              <div className="text-white/50 text-sm mt-3 space-y-0.5">
+                <p>Vocals &ndash; Clo Chaperon</p>
+                <p>Piano &ndash; Brodie Stewart</p>
+                <p>Bass &ndash; Nick Abbey</p>
+                <p>Drums &ndash; Michael Perkins</p>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       )}
