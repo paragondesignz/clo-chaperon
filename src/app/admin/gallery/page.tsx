@@ -3,8 +3,9 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Upload, X, ChevronUp, ChevronDown, ImagePlus } from "lucide-react";
+import { Upload, X, ChevronUp, ChevronDown, ImagePlus, Maximize2 } from "lucide-react";
 import SaveButton from "@/components/admin/SaveButton";
+import AdminLightbox from "@/components/admin/AdminLightbox";
 import type { GallerySection, GalleryImage } from "@/types/content";
 
 interface UploadTask {
@@ -19,6 +20,7 @@ export default function AdminGalleryPage() {
   const [data, setData] = useState<GallerySection | null>(null);
   const [uploads, setUploads] = useState<UploadTask[]>([]);
   const [dragOver, setDragOver] = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<GalleryImage | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -288,13 +290,23 @@ export default function AdminGalleryPage() {
 
                 {/* Overlay controls */}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200">
-                  <button
-                    type="button"
-                    onClick={() => removeImage(i)}
-                    className="absolute top-2 right-2 w-7 h-7 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 text-[#555] hover:text-red-500"
-                  >
-                    <X size={14} />
-                  </button>
+                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      type="button"
+                      onClick={() => setLightboxSrc(image)}
+                      className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-[#222]"
+                      title="View full size"
+                    >
+                      <Maximize2 size={13} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeImage(i)}
+                      className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-red-500 hover:bg-red-50"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
 
                   <div className="absolute top-2 left-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
@@ -342,6 +354,16 @@ export default function AdminGalleryPage() {
       )}
 
       <SaveButton onClick={save} />
+
+      {lightboxSrc && (
+        <AdminLightbox
+          src={lightboxSrc.src}
+          alt={lightboxSrc.alt}
+          width={lightboxSrc.width}
+          height={lightboxSrc.height}
+          onClose={() => setLightboxSrc(null)}
+        />
+      )}
     </div>
   );
 }

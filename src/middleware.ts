@@ -68,9 +68,17 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Protect media API (DELETE requires auth, GET is fine for admin pages)
+  if (pathname.startsWith("/api/media") && request.method === "DELETE") {
+    const authed = await isAuthenticated(request);
+    if (!authed) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/api/content/:path*", "/api/upload/:path*"],
+  matcher: ["/admin/:path*", "/api/content/:path*", "/api/upload/:path*", "/api/media/:path*"],
 };

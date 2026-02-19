@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import sharp from "sharp";
+import { addMediaItem } from "@/lib/media";
+import type { MediaItem } from "@/types/media";
 
 function slugify(name: string): string {
   return name
@@ -33,7 +35,18 @@ export async function POST(request: Request) {
         allowOverwrite: true,
         contentType: file.type || "video/mp4",
       });
-      return NextResponse.json({ url: blob.url });
+
+      const mediaItem: MediaItem = {
+        id: `media-${timestamp}-${Math.random().toString(36).slice(2, 6)}`,
+        url: blob.url,
+        filename: file.name,
+        type: "video",
+        size: buffer.length,
+        uploadedAt: new Date().toISOString(),
+      };
+      await addMediaItem(mediaItem);
+
+      return NextResponse.json({ url: blob.url, mediaId: mediaItem.id });
     }
 
     const maxWidth = parseInt((formData.get("maxWidth") as string) || "2000", 10);
@@ -56,10 +69,26 @@ export async function POST(request: Request) {
       contentType: "image/webp",
     });
 
+    const width = metadata.width ?? 0;
+    const height = metadata.height ?? 0;
+
+    const mediaItem: MediaItem = {
+      id: `media-${timestamp}-${Math.random().toString(36).slice(2, 6)}`,
+      url: blob.url,
+      filename: file.name.replace(/\.[^.]+$/, ".webp"),
+      type: "image",
+      width,
+      height,
+      size: webpBuffer.length,
+      uploadedAt: new Date().toISOString(),
+    };
+    await addMediaItem(mediaItem);
+
     return NextResponse.json({
       url: blob.url,
-      width: metadata.width ?? 0,
-      height: metadata.height ?? 0,
+      width,
+      height,
+      mediaId: mediaItem.id,
     });
   } catch (err) {
     console.error("Upload error:", err);
