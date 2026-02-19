@@ -76,20 +76,20 @@ export default function AboutPage() {
 
       {/* Full-width image break */}
       <AnimatedSection>
-        <div className="relative h-[50vh] min-h-[300px] overflow-hidden">
+        <div className="relative h-[60vh] min-h-[400px] overflow-hidden">
           <Image
-            src="https://static.wixstatic.com/media/24c59a_62074006a705402dae2cfa6ff0822844~mv2_d_5040_3360_s_4_2.jpg"
-            alt="Clo Chaperon performing"
+            src="https://static.wixstatic.com/media/24c59a_d9868c8efb2341998f6da973b7e8ce32~mv2_d_2500_1667_s_2.jpeg"
+            alt="Clo Chaperon"
             fill
-            className="object-cover"
+            className="object-cover object-top"
             unoptimized
           />
         </div>
       </AnimatedSection>
 
-      {/* Pull quote 2 — freedom of jazz */}
+      {/* Pull quote 2 — genuineness */}
       <section className="bg-[#f9f9f9] py-8">
-        <PullQuote quote={PULL_QUOTES[1]} />
+        <PullQuote quote={`"I love music that makes me feel something, whether it's through groove, harmony, lyrics, or melody."`} />
       </section>
 
       {/* Bio — third group (paragraphs 4–6): jazz philosophy & originals */}
