@@ -3,10 +3,29 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Upload, X, ChevronUp, ChevronDown, ImagePlus, Maximize2 } from "lucide-react";
+import { Upload, X, ImagePlus, Maximize2, Library, GripVertical } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+  DragOverlay,
+  type DragStartEvent,
+  type DragEndEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  rectSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import SaveButton from "@/components/admin/SaveButton";
 import AdminLightbox from "@/components/admin/AdminLightbox";
+import MediaPicker from "@/components/admin/MediaPicker";
 import type { GallerySection, GalleryImage } from "@/types/content";
+import type { MediaItem } from "@/types/media";
 
 interface UploadTask {
   id: string;
@@ -16,12 +35,146 @@ interface UploadTask {
   error?: string;
 }
 
+function SortableImageCard({
+  image,
+  index,
+  onUpdate,
+  onRemove,
+  onPreview,
+}: {
+  image: GalleryImage;
+  index: number;
+  onUpdate: (index: number, patch: Partial<GalleryImage>) => void;
+  onRemove: (index: number) => void;
+  onPreview: (image: GalleryImage) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: image.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="group border border-[#eee] rounded-lg overflow-hidden bg-white"
+    >
+      {/* Thumbnail */}
+      <div className="relative aspect-[4/3] bg-[#f5f5f5] overflow-hidden">
+        {image.src ? (
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.opacity = "0.2";
+            }}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-[#ccc]">
+            <ImagePlus size={32} strokeWidth={1} />
+          </div>
+        )}
+
+        {/* Overlay controls */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200">
+          <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              onClick={() => onPreview(image)}
+              className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-[#222]"
+              title="View full size"
+            >
+              <Maximize2 size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={() => onRemove(index)}
+              className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-red-500 hover:bg-red-50"
+            >
+              <X size={14} />
+            </button>
+          </div>
+
+          {/* Drag handle */}
+          <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              type="button"
+              className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-[#222] cursor-grab active:cursor-grabbing"
+              {...attributes}
+              {...listeners}
+            >
+              <GripVertical size={14} />
+            </button>
+          </div>
+
+          <div className="absolute bottom-2 left-2 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
+            {image.width}&times;{image.height}
+          </div>
+        </div>
+      </div>
+
+      {/* Alt text */}
+      <div className="p-2.5">
+        <input
+          value={image.alt}
+          onChange={(e) => onUpdate(index, { alt: e.target.value })}
+          placeholder="Alt text"
+          className="w-full border border-[#eee] rounded px-2.5 py-1.5 text-xs text-[#222] focus:outline-none focus:border-[#222] transition-colors placeholder:text-[#ccc]"
+        />
+      </div>
+    </div>
+  );
+}
+
+function DragOverlayCard({ image }: { image: GalleryImage }) {
+  return (
+    <div className="border border-[#ccc] rounded-lg overflow-hidden bg-white shadow-lg scale-105 rotate-1">
+      <div className="relative aspect-[4/3] bg-[#f5f5f5] overflow-hidden">
+        {image.src ? (
+          <img
+            src={image.src}
+            alt={image.alt}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-[#ccc]">
+            <ImagePlus size={32} strokeWidth={1} />
+          </div>
+        )}
+      </div>
+      <div className="p-2.5">
+        <div className="w-full border border-[#eee] rounded px-2.5 py-1.5 text-xs text-[#888] truncate">
+          {image.alt || "Alt text"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminGalleryPage() {
   const [data, setData] = useState<GallerySection | null>(null);
   const [uploads, setUploads] = useState<UploadTask[]>([]);
   const [dragOver, setDragOver] = useState(false);
   const [lightboxSrc, setLightboxSrc] = useState<GalleryImage | null>(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
+  );
 
   useEffect(() => {
     fetch("/api/content/gallery")
@@ -151,13 +304,34 @@ export default function AdminGalleryPage() {
     setData({ ...data, images: data.images.filter((_, i) => i !== index) });
   };
 
-  const moveImage = (index: number, direction: -1 | 1) => {
-    if (!data) return;
-    const target = index + direction;
-    if (target < 0 || target >= data.images.length) return;
-    const next = [...data.images];
-    [next[index], next[target]] = [next[target], next[index]];
-    setData({ ...data, images: next });
+  const handlePickerSelect = (item: MediaItem) => {
+    const newImage: GalleryImage = {
+      id: `img-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+      src: item.url,
+      alt: item.filename.replace(/\.[^.]+$/, "").replace(/[-_]/g, " "),
+      width: item.width || 600,
+      height: item.height || 400,
+    };
+    setData((prev) =>
+      prev ? { ...prev, images: [...prev.images, newImage] } : prev
+    );
+    setShowPicker(false);
+  };
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id || !data) return;
+
+    const oldIndex = data.images.findIndex((img) => img.id === active.id);
+    const newIndex = data.images.findIndex((img) => img.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    setData({ ...data, images: arrayMove(data.images, oldIndex, newIndex) });
   };
 
   if (!data) {
@@ -169,6 +343,9 @@ export default function AdminGalleryPage() {
   }
 
   const activeUploads = uploads.filter((u) => u.status === "uploading");
+  const activeImage = activeId
+    ? data.images.find((img) => img.id === activeId)
+    : null;
 
   return (
     <div className="max-w-4xl space-y-6">
@@ -186,11 +363,11 @@ export default function AdminGalleryPage() {
         </div>
         <button
           type="button"
-          onClick={() => inputRef.current?.click()}
-          className="flex items-center gap-1.5 bg-black text-white text-xs font-medium px-4 py-2 rounded hover:opacity-80 transition-opacity"
+          onClick={() => setShowPicker(true)}
+          className="flex items-center gap-1.5 border border-[#ddd] text-[#555] text-xs font-medium px-4 py-2 rounded hover:border-[#222] hover:text-[#222] transition-colors"
         >
-          <ImagePlus size={14} />
-          Add Images
+          <Library size={14} />
+          Choose from Library
         </button>
       </div>
 
@@ -263,88 +440,35 @@ export default function AdminGalleryPage() {
         </div>
       )}
 
-      {/* Image grid */}
+      {/* Image grid with drag-and-drop */}
       {data.images.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {data.images.map((image, i) => (
-            <div
-              key={image.id}
-              className="group border border-[#eee] rounded-lg overflow-hidden bg-white"
-            >
-              {/* Thumbnail */}
-              <div className="relative aspect-[4/3] bg-[#f5f5f5] overflow-hidden">
-                {image.src ? (
-                  <img
-                    src={image.src}
-                    alt={image.alt}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.opacity = "0.2";
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-[#ccc]">
-                    <ImagePlus size={32} strokeWidth={1} />
-                  </div>
-                )}
-
-                {/* Overlay controls */}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200">
-                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      type="button"
-                      onClick={() => setLightboxSrc(image)}
-                      className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-[#222]"
-                      title="View full size"
-                    >
-                      <Maximize2 size={13} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeImage(i)}
-                      className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-red-500 hover:bg-red-50"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-
-                  <div className="absolute top-2 left-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      type="button"
-                      onClick={() => moveImage(i, -1)}
-                      disabled={i === 0}
-                      className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-[#222] disabled:opacity-30"
-                    >
-                      <ChevronUp size={14} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => moveImage(i, 1)}
-                      disabled={i === data.images.length - 1}
-                      className="w-7 h-7 bg-white/90 rounded-full flex items-center justify-center text-[#555] hover:text-[#222] disabled:opacity-30"
-                    >
-                      <ChevronDown size={14} />
-                    </button>
-                  </div>
-
-                  <div className="absolute bottom-2 left-2 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {image.width}&times;{image.height}
-                  </div>
-                </div>
-              </div>
-
-              {/* Alt text */}
-              <div className="p-2.5">
-                <input
-                  value={image.alt}
-                  onChange={(e) => updateImage(i, { alt: e.target.value })}
-                  placeholder="Alt text"
-                  className="w-full border border-[#eee] rounded px-2.5 py-1.5 text-xs text-[#222] focus:outline-none focus:border-[#222] transition-colors placeholder:text-[#ccc]"
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={data.images.map((img) => img.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {data.images.map((image, i) => (
+                <SortableImageCard
+                  key={image.id}
+                  image={image}
+                  index={i}
+                  onUpdate={updateImage}
+                  onRemove={removeImage}
+                  onPreview={setLightboxSrc}
                 />
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </SortableContext>
+          <DragOverlay dropAnimation={null}>
+            {activeImage ? <DragOverlayCard image={activeImage} /> : null}
+          </DragOverlay>
+        </DndContext>
       )}
 
       {data.images.length === 0 && uploads.length === 0 && (
@@ -354,6 +478,14 @@ export default function AdminGalleryPage() {
       )}
 
       <SaveButton onClick={save} />
+
+      {showPicker && (
+        <MediaPicker
+          filter="image"
+          onSelect={handlePickerSelect}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
 
       {lightboxSrc && (
         <AdminLightbox
