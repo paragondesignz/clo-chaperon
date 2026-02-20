@@ -76,7 +76,20 @@ export default function AdminMediaPage() {
   }, [fetchMedia]);
 
   useEffect(() => {
-    fetchMedia();
+    // Auto-sync on first load so content images always appear
+    let cancelled = false;
+    (async () => {
+      await fetchMedia();
+      if (cancelled) return;
+      try {
+        const res = await fetch("/api/media/sync", { method: "POST" });
+        const data = await res.json();
+        if (!cancelled && data.added > 0) fetchMedia();
+      } catch {
+        // Sync failure is non-critical
+      }
+    })();
+    return () => { cancelled = true; };
   }, [fetchMedia]);
 
   const uploadFile = useCallback(
@@ -169,14 +182,16 @@ export default function AdminMediaPage() {
     if (!confirm(`Delete "${item.filename}"? This cannot be undone.`)) return;
     setDeleting(item.id);
     try {
-      await fetch("/api/media", {
+      const res = await fetch("/api/media", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: item.id, url: item.url }),
       });
-      setItems((prev) => prev.filter((i) => i.id !== item.id));
+      if (res.ok) {
+        setItems((prev) => prev.filter((i) => i.id !== item.id));
+      }
     } catch {
-      // Silently handle -- could show error toast
+      // Network error
     }
     setDeleting(null);
   };

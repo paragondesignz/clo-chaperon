@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
-import { put } from "@vercel/blob";
+import { put, head } from "@vercel/blob";
 import { getContent } from "@/lib/content";
+import { getMediaLibrary, addMediaItems } from "@/lib/media";
 import type { SiteContent } from "@/types/content";
+import type { MediaItem } from "@/types/media";
 
 const BLOB_PATH = "content.json";
 const WIX_PATTERN = /https:\/\/static\.wixstatic\.com\/[^\s"')]+/g;
@@ -28,6 +30,19 @@ async function migrateImage(url: string): Promise<string> {
   });
 
   return blob.url;
+}
+
+function filenameFromUrl(url: string): string {
+  return url.split("/").pop()?.split("?")[0] ?? "unknown";
+}
+
+async function probeBlob(url: string): Promise<{ size: number } | null> {
+  try {
+    const info = await head(url);
+    return { size: info.size };
+  } catch {
+    return null;
+  }
 }
 
 export async function POST() {
@@ -113,9 +128,62 @@ export async function POST() {
       contentType: "application/json",
     });
 
+    // Sync migrated images into the media library
+    const library = await getMediaLibrary();
+    const existingUrls = new Set(library.items.map((i) => i.url));
+    const dismissed = new Set(library.dismissedUrls ?? []);
+
+    // Replace old wix URLs in existing media items
+    for (const item of library.items) {
+      const replacement = urlMap.get(item.url);
+      if (replacement) {
+        item.url = replacement;
+        item.filename = filenameFromUrl(replacement);
+      }
+    }
+
+    // Also update dismissedUrls to use new blob URLs
+    if (library.dismissedUrls) {
+      library.dismissedUrls = library.dismissedUrls.map(
+        (url) => urlMap.get(url) ?? url
+      );
+    }
+
+    // Rebuild sets after updates
+    const updatedExisting = new Set(library.items.map((i) => i.url));
+    const updatedDismissed = new Set(library.dismissedUrls ?? []);
+
+    // Add any migrated images not yet in media library
+    const newItems: MediaItem[] = [];
+    for (const [, newUrl] of urlMap) {
+      if (updatedExisting.has(newUrl) || updatedDismissed.has(newUrl)) continue;
+      const probe = await probeBlob(newUrl);
+      newItems.push({
+        id: `media-migrate-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        url: newUrl,
+        filename: filenameFromUrl(newUrl),
+        type: "image",
+        size: probe?.size,
+        uploadedAt: new Date().toISOString(),
+      });
+    }
+
+    if (newItems.length > 0) {
+      library.items.unshift(...newItems);
+    }
+
+    // Write updated media library
+    await put("media.json", JSON.stringify(library, null, 2), {
+      access: "public",
+      addRandomSuffix: false,
+      allowOverwrite: true,
+      contentType: "application/json",
+    });
+
     return NextResponse.json({
       message: "Image migration complete",
       migrated: urlMap.size,
+      mediasynced: newItems.length,
       failed: errors.length,
       errors: errors.length > 0 ? errors : undefined,
     });
