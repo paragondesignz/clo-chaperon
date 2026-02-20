@@ -21,6 +21,7 @@ async function writeMedia(library: MediaLibrary): Promise<void> {
   await put(BLOB_PATH, JSON.stringify(library, null, 2), {
     access: "public",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json",
   });
 }
@@ -32,6 +33,13 @@ export async function getMediaLibrary(): Promise<MediaLibrary> {
 export async function addMediaItem(item: MediaItem): Promise<MediaLibrary> {
   const library = await readMedia();
   library.items.unshift(item);
+  await writeMedia(library);
+  return library;
+}
+
+export async function addMediaItems(items: MediaItem[]): Promise<MediaLibrary> {
+  const library = await readMedia();
+  library.items.unshift(...items);
   await writeMedia(library);
   return library;
 }

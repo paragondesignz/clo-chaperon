@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { head } from "@vercel/blob";
 import { getContent } from "@/lib/content";
-import { getMediaLibrary, addMediaItem } from "@/lib/media";
+import { getMediaLibrary, addMediaItems } from "@/lib/media";
 import type { MediaItem } from "@/types/media";
 
 const VIDEO_EXTS = ["mp4", "webm", "mov", "avi", "mkv"];
@@ -66,11 +66,18 @@ export async function POST() {
 
     addUrl(contact.heroImage, "image");
 
-    let added = 0;
+    if (urlEntries.length === 0) {
+      return NextResponse.json({
+        message: "Media library is already up to date",
+        added: 0,
+        total: library.items.length,
+      });
+    }
+
+    const newItems: MediaItem[] = [];
     for (const entry of urlEntries) {
       const probe = await probeBlob(entry.url);
-
-      const item: MediaItem = {
+      newItems.push({
         id: `media-sync-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
         url: entry.url,
         filename: filenameFromUrl(entry.url),
@@ -79,19 +86,15 @@ export async function POST() {
         height: entry.height,
         size: probe?.size,
         uploadedAt: new Date().toISOString(),
-      };
-
-      await addMediaItem(item);
-      existingUrls.add(entry.url);
-      added++;
+      });
     }
 
+    await addMediaItems(newItems);
+
     return NextResponse.json({
-      message: added > 0
-        ? `Synced ${added} file${added !== 1 ? "s" : ""} to media library`
-        : "Media library is already up to date",
-      added,
-      total: library.items.length + added,
+      message: `Synced ${newItems.length} file${newItems.length !== 1 ? "s" : ""} to media library`,
+      added: newItems.length,
+      total: library.items.length + newItems.length,
     });
   } catch (err) {
     console.error("Media sync error:", err);
