@@ -1,12 +1,124 @@
 "use client";
 
-import { useState, useEffect } from "react";
+/* eslint-disable @next/next/no-img-element */
+
+import { useState, useEffect, useRef } from "react";
+import { Plus, X, Library } from "lucide-react";
 import FormField from "@/components/admin/FormField";
 import ImageUploader from "@/components/admin/ImageUploader";
 import SectionCard from "@/components/admin/SectionCard";
 import SaveButton from "@/components/admin/SaveButton";
 import SortableList from "@/components/admin/SortableList";
+import MediaPicker from "@/components/admin/MediaPicker";
 import type { HomeSection } from "@/types/content";
+import type { MediaItem } from "@/types/media";
+
+function ImageStripSection({
+  images,
+  onChange,
+}: {
+  images: string[];
+  onChange: (images: string[]) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [showPicker, setShowPicker] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  const upload = async (file: File) => {
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type", "image");
+    formData.append("maxWidth", "1200");
+    formData.append("maxHeight", "800");
+    try {
+      const res = await fetch("/api/upload", { method: "POST", body: formData });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      onChange([...images, data.url]);
+    } catch {
+      // Upload failed
+    }
+    setUploading(false);
+  };
+
+  const handlePickerSelect = (item: MediaItem) => {
+    onChange([...images, item.url]);
+    setShowPicker(false);
+  };
+
+  return (
+    <SectionCard title="Image Strip" description="A horizontal row of images shown near the bottom of the page.">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files?.[0]) upload(e.target.files[0]);
+          if (inputRef.current) inputRef.current.value = "";
+        }}
+      />
+
+      <div className="flex flex-wrap gap-2">
+        {images.map((url, i) => (
+          <div
+            key={i}
+            className="group relative w-24 h-24 rounded-lg overflow-hidden border border-[#eee] bg-[#f5f5f5] flex-shrink-0"
+          >
+            {url ? (
+              <img
+                src={url}
+                alt={`Strip image ${i + 1}`}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-[10px] text-[#ccc]">
+                Empty
+              </div>
+            )}
+            <button
+              type="button"
+              onClick={() => onChange(images.filter((_, idx) => idx !== i))}
+              className="absolute top-1 right-1 w-5 h-5 bg-black/60 rounded-full flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+            >
+              <X size={10} />
+            </button>
+          </div>
+        ))}
+
+        {/* Add buttons */}
+        <button
+          type="button"
+          onClick={() => inputRef.current?.click()}
+          disabled={uploading}
+          className="w-24 h-24 rounded-lg border-2 border-dashed border-[#ddd] flex flex-col items-center justify-center gap-1 text-[#bbb] hover:border-[#aaa] hover:text-[#888] transition-colors flex-shrink-0"
+        >
+          <Plus size={16} />
+          <span className="text-[9px] font-medium">
+            {uploading ? "Uploading..." : "Upload"}
+          </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setShowPicker(true)}
+          className="w-24 h-24 rounded-lg border-2 border-dashed border-[#ddd] flex flex-col items-center justify-center gap-1 text-[#bbb] hover:border-[#aaa] hover:text-[#888] transition-colors flex-shrink-0"
+        >
+          <Library size={16} />
+          <span className="text-[9px] font-medium">Library</span>
+        </button>
+      </div>
+
+      {showPicker && (
+        <MediaPicker
+          filter="image"
+          onSelect={handlePickerSelect}
+          onClose={() => setShowPicker(false)}
+        />
+      )}
+    </SectionCard>
+  );
+}
 
 export default function AdminHomePage() {
   const [data, setData] = useState<HomeSection | null>(null);
@@ -117,29 +229,10 @@ export default function AdminHomePage() {
         </div>
       </SectionCard>
 
-      <SectionCard title="Image Strip" description="A horizontal row of images shown near the bottom of the page.">
-        <SortableList
-          items={data.imageStrip}
-          onChange={(items) => setData({ ...data, imageStrip: items })}
-          onAdd={() =>
-            setData({ ...data, imageStrip: [...data.imageStrip, ""] })
-          }
-          addLabel="Add image"
-          renderItem={(item, i) => (
-            <ImageUploader
-              value={item}
-              onChange={(url) => {
-                const next = [...data.imageStrip];
-                next[i] = url;
-                setData({ ...data, imageStrip: next });
-              }}
-              maxWidth={1200}
-              maxHeight={800}
-              compact
-            />
-          )}
-        />
-      </SectionCard>
+      <ImageStripSection
+        images={data.imageStrip}
+        onChange={(images) => setData({ ...data, imageStrip: images })}
+      />
 
       <SaveButton onClick={save} />
     </div>
