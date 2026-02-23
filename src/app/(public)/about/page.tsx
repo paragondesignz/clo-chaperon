@@ -41,7 +41,7 @@ export default async function AboutPage() {
           fill
           className="object-cover object-top"
           priority
-          unoptimized
+          sizes="100vw"
         />
       </section>
 
@@ -86,7 +86,7 @@ export default async function AboutPage() {
             alt="Clo Chaperon performing"
             fill
             className="object-cover object-center"
-            unoptimized
+            sizes="100vw"
           />
         </div>
       </AnimatedSection>

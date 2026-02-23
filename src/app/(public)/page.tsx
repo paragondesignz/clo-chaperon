@@ -33,7 +33,7 @@ export default async function HomePage() {
               alt="Clo Chaperon"
               fill
               className="object-cover"
-              unoptimized
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           </AnimatedSection>
 
@@ -88,7 +88,7 @@ export default async function HomePage() {
                   alt={`Gallery preview ${i + 1}`}
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  unoptimized
+                  sizes="(max-width: 768px) 50vw, 25vw"
                 />
               </Link>
             </AnimatedSection>

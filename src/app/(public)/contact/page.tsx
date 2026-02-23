@@ -49,7 +49,7 @@ export default async function ContactPage() {
           fill
           className="object-cover object-top"
           priority
-          unoptimized
+          sizes="100vw"
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">

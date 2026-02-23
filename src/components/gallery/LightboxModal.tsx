@@ -101,7 +101,7 @@ export default function LightboxModal({
               width={current.width}
               height={current.height}
               className="w-full h-auto max-h-[80vh] object-contain"
-              unoptimized
+              sizes="(max-width: 1024px) 90vw, 800px"
             />
             <p className="text-center text-white/50 text-sm mt-4">
               {currentIndex + 1} / {images.length}

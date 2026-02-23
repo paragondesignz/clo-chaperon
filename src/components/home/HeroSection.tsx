@@ -22,7 +22,7 @@ export default function HeroSection({ heroImage }: HeroSectionProps) {
           fill
           className="object-cover"
           priority
-          unoptimized
+          sizes="100vw"
         />
       </motion.div>
 

@@ -53,7 +53,7 @@ export default function GalleryClient({ images }: GalleryClientProps) {
                 width={image.width}
                 height={image.height}
                 className="w-full h-auto object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
-                unoptimized
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </motion.div>
           ))}
