@@ -56,6 +56,41 @@ export async function updateSection<K extends SectionKey>(
   return updated;
 }
 
+export async function scrubUrl(url: string): Promise<number> {
+  const content = await getContent();
+  let count = 0;
+
+  // Home: heroImage, quoteImage, imageStrip
+  if (content.home.heroImage === url) { content.home.heroImage = ""; count++; }
+  if (content.home.quoteImage === url) { content.home.quoteImage = ""; count++; }
+  const stripBefore = content.home.imageStrip.length;
+  content.home.imageStrip = content.home.imageStrip.filter((u) => u !== url);
+  count += stripBefore - content.home.imageStrip.length;
+
+  // About: heroImage, midImage
+  if (content.about.heroImage === url) { content.about.heroImage = ""; count++; }
+  if (content.about.midImage === url) { content.about.midImage = ""; count++; }
+
+  // Gallery: images
+  const galleryBefore = content.gallery.images.length;
+  content.gallery.images = content.gallery.images.filter((img) => img.src !== url);
+  count += galleryBefore - content.gallery.images.length;
+
+  // Videos: thumbnail and src
+  for (const vid of content.videos.items) {
+    if (vid.thumbnail === url) { vid.thumbnail = ""; count++; }
+    if (vid.src === url) { vid.src = ""; count++; }
+  }
+
+  // Contact: heroImage
+  if (content.contact.heroImage === url) { content.contact.heroImage = ""; count++; }
+
+  if (count > 0) {
+    await writeBlob(content);
+  }
+  return count;
+}
+
 export async function seedContent(): Promise<SiteContent> {
   const exists = await blobExists();
   if (exists) {

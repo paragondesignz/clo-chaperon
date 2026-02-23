@@ -211,9 +211,19 @@ export default function ImageUploader({
               type="button"
               onClick={() => inputRef.current?.click()}
               className="flex items-center gap-1.5 bg-white text-[#222] text-xs font-medium px-2.5 py-1.5 rounded shadow-sm hover:bg-[#f5f5f5] transition-colors"
+              title="Upload replacement"
             >
               <RefreshCw size={12} />
               {!compact && "Replace"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setPicker(true)}
+              className="flex items-center gap-1.5 bg-white text-[#222] text-xs font-medium px-2.5 py-1.5 rounded shadow-sm hover:bg-[#f5f5f5] transition-colors"
+              title="Choose from Library"
+            >
+              <FolderOpen size={12} />
+              {!compact && "Library"}
             </button>
             <button
               type="button"

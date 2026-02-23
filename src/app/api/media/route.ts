@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { del } from "@vercel/blob";
 import { getMediaLibrary, deleteMediaItem } from "@/lib/media";
+import { scrubUrl } from "@/lib/content";
 
 export async function GET() {
   try {
@@ -23,6 +24,12 @@ export async function DELETE(request: Request) {
         await del(url);
       } catch {
         // File may already be gone -- continue with registry removal
+      }
+      // Remove the URL from all content sections so it doesn't re-sync
+      try {
+        await scrubUrl(url);
+      } catch {
+        // Non-critical -- dismissedUrls will also block re-sync
       }
     }
 
