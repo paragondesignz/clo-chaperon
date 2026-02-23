@@ -11,9 +11,9 @@ export default function HeroSection({ heroImage }: HeroSectionProps) {
   return (
     <section className="relative h-[75vh] overflow-hidden">
       <motion.div
-        initial={{ scale: 1.05 }}
+        initial={{ scale: 1.12 }}
         animate={{ scale: 1 }}
-        transition={{ duration: 8, ease: "easeOut" }}
+        transition={{ duration: 10, ease: "easeOut" }}
         className="absolute inset-0"
       >
         <Image
