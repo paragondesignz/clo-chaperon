@@ -36,7 +36,9 @@ async function writeBlob(content: SiteContent): Promise<void> {
 
 export async function getContent(): Promise<SiteContent> {
   const content = await readBlob();
-  return content ?? defaultContent;
+  if (!content) return defaultContent;
+  // Merge defaults for any sections missing from stored content
+  return { ...defaultContent, ...content };
 }
 
 export async function getSection<K extends SectionKey>(
