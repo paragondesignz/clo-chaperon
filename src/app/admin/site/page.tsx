@@ -66,12 +66,6 @@ export default function AdminSitePage() {
           hint="This description appears in search engine results."
           maxLength={160}
         />
-        <FormField
-          label="Copyright"
-          value={data.copyright}
-          onChange={(v) => setData({ ...data, copyright: v })}
-          placeholder="e.g. 2024 Clo Chaperon. All rights reserved."
-        />
       </SectionCard>
 
       <SaveButton onClick={save} />

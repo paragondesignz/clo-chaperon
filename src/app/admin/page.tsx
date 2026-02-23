@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const sections = [
-  { href: "/admin/site", label: "Site Info", description: "Name, tagline, description, copyright" },
+  { href: "/admin/site", label: "Site Info", description: "Name, tagline, description" },
   { href: "/admin/home", label: "Home Page", description: "Hero image, intro text, quotes, image strip" },
   { href: "/admin/about", label: "About Page", description: "Bio paragraphs, pull quotes, images" },
   { href: "/admin/gallery", label: "Photos", description: "Add, remove, and reorder gallery images" },
