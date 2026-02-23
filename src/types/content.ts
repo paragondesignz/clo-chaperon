@@ -4,6 +4,7 @@ export interface SiteContent {
   about: AboutSection;
   gallery: GallerySection;
   videos: VideosSection;
+  music: MusicSection;
   social: SocialSection;
   contact: ContactSection;
 }
@@ -56,6 +57,18 @@ export interface VideoItem {
   thumbnail?: string;
   venue?: string;
   musicians?: string;
+}
+
+export interface MusicItem {
+  id: string;
+  spotifyUrl: string;
+  title: string;
+}
+
+export interface MusicSection {
+  heading: string;
+  subheading: string;
+  items: MusicItem[];
 }
 
 export interface SocialSection {

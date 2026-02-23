@@ -13,8 +13,9 @@ const topItems = [
 const pageItems = [
   { href: "/admin/home", label: "Home" },
   { href: "/admin/about", label: "About" },
-  { href: "/admin/gallery", label: "Gallery" },
+  { href: "/admin/gallery", label: "Photos" },
   { href: "/admin/videos", label: "Videos" },
+  { href: "/admin/music", label: "Music" },
   { href: "/admin/social", label: "Social Links" },
   { href: "/admin/contact", label: "Contact" },
 ];

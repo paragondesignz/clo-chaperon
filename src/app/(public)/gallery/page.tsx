@@ -3,7 +3,7 @@ import { getSection } from "@/lib/content";
 import GalleryClient from "@/components/gallery/GalleryClient";
 
 export const metadata: Metadata = {
-  title: "Gallery",
+  title: "Photos",
 };
 
 export const revalidate = 60;

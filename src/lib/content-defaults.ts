@@ -124,6 +124,12 @@ export const defaultContent: SiteContent = {
     ],
   },
 
+  music: {
+    heading: "Music",
+    subheading: "Listen on Spotify",
+    items: [],
+  },
+
   social: {
     links: [
       {

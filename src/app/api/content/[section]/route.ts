@@ -8,6 +8,7 @@ const VALID_SECTIONS: SectionKey[] = [
   "about",
   "gallery",
   "videos",
+  "music",
   "social",
   "contact",
 ];

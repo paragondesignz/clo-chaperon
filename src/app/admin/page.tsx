@@ -4,8 +4,9 @@ const sections = [
   { href: "/admin/site", label: "Site Info", description: "Name, tagline, description, copyright" },
   { href: "/admin/home", label: "Home Page", description: "Hero image, intro text, quotes, image strip" },
   { href: "/admin/about", label: "About Page", description: "Bio paragraphs, pull quotes, images" },
-  { href: "/admin/gallery", label: "Gallery", description: "Add, remove, and reorder gallery images" },
+  { href: "/admin/gallery", label: "Photos", description: "Add, remove, and reorder gallery images" },
   { href: "/admin/videos", label: "Videos", description: "Manage video entries" },
+  { href: "/admin/music", label: "Music", description: "Manage Spotify track and album embeds" },
   { href: "/admin/social", label: "Social Links", description: "Instagram, Spotify, Facebook, etc." },
   { href: "/admin/contact", label: "Contact Page", description: "Hero image, heading, intro text" },
 ];
