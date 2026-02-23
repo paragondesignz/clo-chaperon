@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import HeroSection from "@/components/home/HeroSection";
+import FadeIn from "@/components/ui/FadeIn";
 import AnimatedSection from "@/components/ui/AnimatedSection";
 import { getSection } from "@/lib/content";
 
@@ -16,11 +17,11 @@ export default async function HomePage() {
       {/* Intro */}
       <section className="py-24 px-6">
         <div className="max-w-3xl mx-auto text-center">
-          <AnimatedSection>
+          <FadeIn>
             <p className="text-[#555] text-lg sm:text-xl leading-relaxed font-light">
               {home.introText}
             </p>
-          </AnimatedSection>
+          </FadeIn>
         </div>
       </section>
 
