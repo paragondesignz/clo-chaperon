@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { createResetToken, findAdminSlot } from "@/lib/auth";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
   try {
     const { email } = await request.json();
@@ -19,6 +17,7 @@ export async function POST(request: Request) {
       const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
       const resetLink = `${siteUrl}/admin/reset-password?token=${token}`;
 
+      const resend = new Resend(process.env.RESEND_API_KEY);
       await resend.emails.send({
         from: "Clo Chaperon <noreply@clochaperon.com>",
         to: email,
