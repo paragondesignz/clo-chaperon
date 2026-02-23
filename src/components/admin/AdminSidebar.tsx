@@ -30,7 +30,6 @@ export default function AdminSidebar() {
         <Link
           href="/"
           className="px-3 py-2 mb-3 text-sm text-[#888] hover:text-[#222] transition-colors"
-          target="_blank"
         >
           View Site &rarr;
         </Link>

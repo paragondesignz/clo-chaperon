@@ -52,7 +52,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Protect POST to content API endpoints (seed, migrate-images, etc.)
+  // Protect POST to content API endpoints
   if (pathname.startsWith("/api/content") && request.method === "POST") {
     const authed = await isAuthenticated(request);
     if (!authed) {
