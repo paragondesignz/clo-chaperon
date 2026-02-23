@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -61,6 +62,14 @@ export default function LoginForm() {
           required
           className="w-full border border-[#ddd] rounded px-3 py-2 text-sm focus:outline-none focus:border-[#222] transition-colors"
         />
+        <div className="mt-1.5 text-right">
+          <Link
+            href="/admin/forgot-password"
+            className="text-xs text-[#aaa] hover:text-[#222] transition-colors"
+          >
+            Forgot password?
+          </Link>
+        </div>
       </div>
       {error && (
         <p className="text-sm text-red-500">{error}</p>

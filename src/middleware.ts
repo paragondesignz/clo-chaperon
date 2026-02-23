@@ -24,9 +24,11 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip login page and auth API routes
+  // Skip login/reset pages and auth API routes
   if (
     pathname === "/admin/login" ||
+    pathname === "/admin/forgot-password" ||
+    pathname === "/admin/reset-password" ||
     pathname.startsWith("/api/auth/")
   ) {
     return NextResponse.next();
